@@ -2,4 +2,4 @@
 #pragma once
 
 #define PROJ_BUTTONS_POLLING_ONLY
-#define PROJ_MODE2                  1
+#define PROJ_MODE15                  1

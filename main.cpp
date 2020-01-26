@@ -10,7 +10,6 @@
 #include "Pokitto.h"
 #include "Tilemap.hpp"
 #include "Data.h"
-#include "Girl.h"
 
 using PC = Pokitto::Core;
 using PD = Pokitto::Display;
@@ -39,6 +38,7 @@ int main(){
 
     uint16_t mapW = 16 * 16;        // 16 tiles of 16 pixels
     uint16_t mapH = 16 * 16;        // 16 tiles of 16 pixels
+
     int16_t heroOnScreenX = PD::width / 2; 
     int16_t heroOnScreenY = PD::height / 2;
 

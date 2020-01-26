@@ -286,6 +286,12 @@
 		},
 		"/Girl.h": {
 			"sdcard": false
+		},
+		"/Data.h": {
+			"sdcard": false
+		},
+		"/Palette.h": {
+			"sdcard": false
 		}
 	}
 }
