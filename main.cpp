@@ -3,7 +3,7 @@
 // # The source code in this file is released under the MIT license.
 // # Go to http://opensource.org/licenses/MIT for the full license details.
 // #
-// # Convert to C++ by Filmote
+// # Converted to C++ by Filmote
 
 // # *** A TILEMAP DEMO FOR THE POKITTO ***
 
@@ -14,7 +14,17 @@
 using PC = Pokitto::Core;
 using PD = Pokitto::Display;
 
+const uint16_t mapW = 16 * 16;        // 16 tiles of 16 pixels
+const uint16_t mapH = 16 * 16;        // 16 tiles of 16 pixels
+
 Tilemap tilemap;
+
+enum TileType {
+	Water = 8,
+	Grass = 4,
+	Tree = 5,
+	Green = 11,
+}; 
 
 int main(){
 
@@ -26,18 +36,24 @@ int main(){
     // Initialise the map ..
     
     tilemap.set(16, 16, Data::mapPixels1);
-    tilemap.tiles[0x0b] = Data::green16;
-    tilemap.tiles[0x05] = Data::tree16;
-    tilemap.tiles[0x04] = Data::grass16;
-    tilemap.tiles[0x08] = Data::water16;
+    tilemap.tiles[TileType::Green] = Data::green16;
+    tilemap.tiles[TileType::Tree] = Data::tree16;
+    tilemap.tiles[TileType::Grass] = Data::grass16;
+    tilemap.tiles[TileType::Water] = Data::water16;
 
-    int16_t vx = 0;
-    int16_t vy = 0;
+    
+    #ifdef PROJ_MODE2
     int16_t x = -120;
     int16_t y = -100;
+    #endif
 
-    uint16_t mapW = 16 * 16;        // 16 tiles of 16 pixels
-    uint16_t mapH = 16 * 16;        // 16 tiles of 16 pixels
+    #ifdef PROJ_MODE15
+    int16_t x = -20;
+    int16_t y = -50;
+    #endif
+
+    int16_t xOffset = 0;
+    int16_t yOffset = 0;
 
     int16_t heroOnScreenX = PD::width / 2; 
     int16_t heroOnScreenY = PD::height / 2;
@@ -49,42 +65,142 @@ int main(){
 
         PC::buttons.pollButtons();        
 
+
+        // capture the old coordinates in case we need to move back ..
+        
         int16_t oldX = x;
         int16_t oldY = y;
-
-        if (PC::buttons.pressed(BTN_LEFT)  || PC::buttons.repeat(BTN_LEFT, 1))    { x = x + 1; }
-        if (PC::buttons.pressed(BTN_RIGHT) || PC::buttons.repeat(BTN_RIGHT, 1))   { x = x - 1; }
-        if (PC::buttons.pressed(BTN_UP)    || PC::buttons.repeat(BTN_UP, 1))      { y = y + 1; }
-        if (PC::buttons.pressed(BTN_DOWN)  || PC::buttons.repeat(BTN_DOWN, 1))    { y = y - 1; }
+        int16_t oldXOffset = xOffset;
+        int16_t oldYOffset = yOffset;
 
 
-        // Check the map tile under the girl.
+        if (PC::buttons.pressed(BTN_LEFT) || PC::buttons.repeat(BTN_LEFT, 1))    { 
+
+
+            // If we are already on the right hand side of the screen, come back to the centre ..
+            
+            if (xOffset < 0) {                                  
+                xOffset++;
+            }
+            
+            
+            // Otherwise scroll the screen itself if we can ..
+            
+            else if (x < 0) {
+                x++;
+            }
+            
+            
+            // If we cannot scroll the screen, move the player to the left ..
+            
+            else if (x <= (PD::width / 2)) {     
+                xOffset++;
+            }
+
+
+        }
         
-        int16_t girlCenterInMapX = (heroOnScreenX + 6) - x;
-        int16_t girlCerterInMapY = (heroOnScreenY + 7) - y;
+        if (PC::buttons.pressed(BTN_RIGHT) || PC::buttons.repeat(BTN_RIGHT, 1))   { 
+
+
+            // If we are already on the left hand side of the screen, come back to the centre ..
+            
+            if (xOffset > 0) {
+                xOffset--;
+            }
+                 
+            
+            // Otherwise scroll the screen itself if we can ..
+            
+            else if (x > (PD::width - mapW) && x <= 0) {
+                x--;
+            }
+            
+            
+            // If we cannot scroll the screen, move the player to the right ..
+            
+            else if (x >= (PD::width - mapW)) {
+                xOffset--;
+            }
+
+            
+        }
+        
+        
+        if (PC::buttons.pressed(BTN_UP) || PC::buttons.repeat(BTN_UP, 1))      { 
+
+            
+            // If we are already in the bottom section of the screen, come back to the centre ..
+            
+            if (yOffset < 0) {                                  
+                yOffset++;
+            }
+            
+            
+            // Otherwise scroll the screen itself if we can ..
+            
+            else if (y < 0) {
+                y++;
+            }
+            
+            
+            // If we cannot scroll the screen, move the player up ..
+            
+            else if (y <= (PD::height / 2)) {     
+                yOffset++;
+            }
+            
+            
+        }
+        
+        if (PC::buttons.pressed(BTN_DOWN) || PC::buttons.repeat(BTN_DOWN, 1))    { 
+
+
+            // If we are already in the top section of the screen, come back to the centre ..
+            
+            if (yOffset > 0) {
+                yOffset--;
+            }
+                 
+            
+            // Otherwise scroll the screen itself if we can ..
+            
+            else if (y > (PD::height - mapH) && y <= 0) {
+                y--;
+            }
+            
+            
+            // If we cannot scroll the screen, move the player down ..
+            
+            else if (y >= (PD::height - mapH)) {
+                yOffset--;
+            }
+           
+        }
+
+
+
+        // Check the map tile under the player.
+        
+        int16_t girlCenterInMapX = (heroOnScreenX + 6) - x - xOffset;
+        int16_t girlCerterInMapY = (heroOnScreenY + 7) - y - yOffset;
         uint8_t tileId = tilemap.GetTileId(girlCenterInMapX, girlCerterInMapY, 16);
 
-        // If the tile is not grass, do not move.
+
+        // If the tile is not green, do not move.
         
-        if (tileId != 0xb) {
+        if (tileId != TileType::Green) {
+            
             x = oldX;
             y = oldY;
+            xOffset = oldXOffset;
+            yOffset = oldYOffset;
+            
         }
 
         
-        // Check for out of bounds.
-        
-         if (x > 0)             x = 0;
-         if (x + mapW < 110)    x = 110 - mapW;
-         if (y > 0)             y = 0;
-         if (y + mapH < 88)     y = 88 - mapH;
-        
-        
         tilemap.draw(x, y);
-        PD::drawBitmapData(heroOnScreenX, heroOnScreenY, 12, 15, Data::girl12x15Pixels);
-        
-        
-        
+        PD::drawBitmapData(heroOnScreenX - xOffset, heroOnScreenY - yOffset, 12, 15, Data::girl12x15Pixels);
 
     }
     

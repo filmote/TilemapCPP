@@ -292,6 +292,24 @@
 		},
 		"/Palette.h": {
 			"sdcard": false
+		},
+		"/TilemapCPP.elf": {
+			"sdcard": false
+		},
+		"/TilemapCPP.bin": {
+			"sdcard": false
+		},
+		"/TilemapCPP.bin.1.gif": {
+			"sdcard": false
+		},
+		"/TilemapCPP.bin.2.png": {
+			"sdcard": false
+		},
+		"/TilemapCPP.bin.3.gif": {
+			"sdcard": false
+		},
+		"/TilemapCPP.bin.2.h": {
+			"sdcard": false
 		}
 	}
 }
