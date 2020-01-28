@@ -1,11 +1,11 @@
-// # Copyright (C) 2019 Hannu Viitala
-// #
-// # The source code in this file is released under the MIT license.
-// # Go to http://opensource.org/licenses/MIT for the full license details.
-// #
-// # Convert to C++ by Filmote
+// Copyright (C) 2019 Hannu Viitala
+// 
+// The source code in this file is released under the MIT license.
+// Go to http://opensource.org/licenses/MIT for the full license details.
+// 
+// Convert to C++ by Filmote
 
-// # *** A TILEMAP DEMO FOR THE POKITTO ***
+// *** A TILEMAP DEMO FOR THE POKITTO ***
 
 #include "Pokitto.h"
 #include "Tilemap.hpp"
@@ -82,8 +82,6 @@ int main(){
         
         tilemap.draw(x, y);
         PD::drawBitmapData(heroOnScreenX, heroOnScreenY, 12, 15, Data::girl12x15Pixels);
-        
-        
         
 
     }
